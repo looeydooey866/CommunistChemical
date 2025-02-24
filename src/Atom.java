@@ -33,5 +33,31 @@ public class Atom {
     //6s 4f 5d 6p
     //7s 5f 6d 7p
 
-    
+    private static final int[][] orbitalOrder = {
+            {1,1},
+            {2,1}, {2,2},
+            {3,1}, {3,2},
+            {4,1}, {3,3}, {4,2},
+            {5,1}, {4,3}, {5,2},
+            {6,1}, {4,4}, {5,3}, {6,2},
+            {7,1}, {5,4}, {6,3}, {7,2}
+    };
+
+    public Atom(int protonNumber, int neutronNumber, int electronNumber) {
+        this.protonNumber = protonNumber;
+        this.neutronNumber = neutronNumber;
+        aufbau(electronNumber);
+    }
+
+    public Atom(int protonNumber, int neutronNumber) {
+        this(protonNumber, neutronNumber, protonNumber);
+    }
+
+    public Atom(int protonNumber) {
+        this(protonNumber, protonNumber);
+    }
+
+    public void aufbau(int electronNumber) {
+
+    }
 }
