@@ -240,4 +240,10 @@ public class Atom {
 
     public int getAtomicNumber() {return atomicNumber;}
 
+    public void alphaDecay(){
+        atomicNumber -= 2;
+        neutronNumber -= 2;
+    }
+
+    
 }
