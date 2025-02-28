@@ -1,5 +1,7 @@
 package src;
 
+import java.util.Arrays;
+
 public class Atom {
     private static final char[] ORBITAL_LABELS = {'s', 'p', 'd', 'f'};
     private int neutronNumber;
@@ -17,6 +19,7 @@ public class Atom {
             {0, 0, 0},
             {0, 0}
     };
+
     private static final int[][] maxOrbitals = {
             {S},
             {S, P},
@@ -59,9 +62,25 @@ public class Atom {
         this(atomicNumber, atomicNumber);
     }
 
+    public static String deepToString(int[][] orbitals) {
+        StringBuilder result = new StringBuilder();
+        for (int[] orbital : orbitals) {
+            result.append(Arrays.toString(orbital)).append("\n");
+        }
+        return result.toString();
+    }
 
+    public void setup(int[][] orbitals) {
+        orbitals = new int[][]{{0},
+                {0, 0},
+                {0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0},
+                {0, 0}
+        };
+    }
     public void aufbau(int electronNumber) {
-        System.out.println("Starting aufbau with " + electronNumber + " electrons.");
 
         for (int[] orbital : orbitalOrder) {
             int n = orbital[0] - 1; // Convert to zero-based index
@@ -79,8 +98,6 @@ public class Atom {
             orbitals[n][l] += toFill;
             electronNumber -= toFill;
 
-            System.out.println("Added " + toFill + " electrons to orbital " + (n + 1) + ORBITAL_LABELS[l]);
-
             if (electronNumber == 0) break;
         }
 
@@ -90,52 +107,41 @@ public class Atom {
     private void applyExceptions() {
         // Chromium (24) and Molybdenum (42)
         if (atomicNumber == 24 || atomicNumber == 42) {
-            System.out.println("Applied exception for Cr/Mo.");
             orbitals[3][0] = 1; // 4s1
             orbitals[2][2] = 5; // 3d5 (or 4d5 for Mo)
         }
 
         // Copper (29), Silver (47), Gold (79)
         if (atomicNumber == 29 || atomicNumber == 47 || atomicNumber == 79) {
-            System.out.println("Applied exception for Cu/Ag/Au.");
             orbitals[3][0] = 1; // 4s1 (or equivalent)
             orbitals[2][2] = 10; // 3d10
         }
 
         // Niobium (41), Ruthenium (44), Rhodium (45)
         if (atomicNumber == 41) { // Niobium
-            System.out.println("Applied exception for Nb.");
             orbitals[4][0] = 1; // 5s1
             orbitals[3][2] = 4; // 4d4
         }
         if (atomicNumber == 44) { // Ruthenium
-            System.out.println("Applied exception for Ru.");
             orbitals[4][0] = 1; // 5s1
             orbitals[3][2] = 7; // 4d7
         }
         if (atomicNumber == 45) { // Rhodium
-            System.out.println("Applied exception for Rh.");
             orbitals[4][0] = 1; // 5s1
             orbitals[3][2] = 8; // 4d8
         }
-
         // Palladium (46)
         if (atomicNumber == 46) {
-            System.out.println("Applied exception for Pd.");
             orbitals[4][0] = 0; // 5s0
             orbitals[3][2] = 10; // 4d10
         }
-
         // Platinum (78)
         if (atomicNumber == 78) {
-            System.out.println("Applied exception for Pt.");
             orbitals[5][0] = 1; // 6s1
             orbitals[4][2] = 10; // 5d10
         }
-
         // Lawrencium (103)
         if (atomicNumber == 103) {
-            System.out.println("Applied exception for Lr.");
             orbitals[6][0] = 1; // 7s1
             orbitals[4][3] = 14; // 5f14
             orbitals[5][2] = 2; // 6d2
@@ -143,81 +149,31 @@ public class Atom {
     }
 
     public void ionise(int electronLoss) {
-        if (electronLoss == 0) {
-            System.out.println("No change in electron count. electronLoss must be non-zero.");
-            return;
-        }
-
+        int electronsToLose = electronLoss;
+        int electronsToGain = -electronLoss;
         if (electronLoss > 0) {
-            // Remove electrons
-            System.out.println("Removing " + electronLoss + " electrons from the atom.");
-            removeElectrons(electronLoss);
-        } else {
-            // Add electrons (electronLoss is negative)
-            int electronGain = -electronLoss; // Convert to positive
-            System.out.println("Adding " + electronGain + " electrons to the atom.");
-            addElectrons(electronGain);
-        }
-    }
-
-    // Helper method to remove electrons
-    private void removeElectrons(int electronLoss) {
-        int totalElectrons = getTotalElectrons();
-        if (electronLoss > totalElectrons) {
-            System.out.println("Cannot remove more electrons than available. Total electrons: " + totalElectrons);
-            return;
-        }
-
-        // Iterate through orbitals in reverse order (outermost to innermost)
-        for (int i = orbitals.length - 1; i >= 0; i--) {
-            for (int j = orbitals[i].length - 1; j >= 0; j--) {
-                int electronsInOrbital = orbitals[i][j];
-                int electronsToRemove = Math.min(electronLoss, electronsInOrbital);
-
-                orbitals[i][j] -= electronsToRemove;
-                electronLoss -= electronsToRemove;
-
-                System.out.println("Removed " + electronsToRemove + " electrons from orbital " + (i + 1) + ORBITAL_LABELS[j]);
-
-                if (electronLoss == 0) {
-                    return; // All electrons removed
+            for (int i = orbitals.length - 1; i >= 0; i--) {
+                for (int j = orbitals[i].length - 1; j >= 0; j--) {
+                    if (orbitals[i][j] > 0) {
+                        int toRemove = Math.min(orbitals[i][j], electronsToLose);
+                        electronsToLose -= toRemove;
+                        orbitals[i][j] -= toRemove;
+                    }
+                }
+            }
+        } else if (electronsToGain > 0) {
+            for (int i = 0; i < orbitals.length; i++) {
+                for (int j = 0; j < orbitals[i].length ; j++) {
+                    if (orbitals[i][j] < maxOrbitals[i][j]) {
+                        int needed = Math.min(maxOrbitals[i][j] - orbitals[i][j], electronsToGain);
+                        electronsToGain -= needed;
+                        orbitals[i][j] += needed;
+                    }
                 }
             }
         }
+
     }
-
-    // Helper method to add electrons
-    private void addElectrons(int electronGain) {
-        // Iterate through orbitals in the order of the Aufbau principle
-        for (int[] orbital : orbitalOrder) {
-            int n = orbital[0] - 1; // Convert to zero-based index
-            int l = orbital[1] - 1;
-
-            // Safety check: Ensure n and l are within bounds
-            if (n < 0 || n >= orbitals.length || l < 0 || l >= orbitals[n].length) {
-                System.err.println("Index out of bounds: n=" + n + ", l=" + l);
-                continue; // Skip this iteration
-            }
-
-            int maxElectrons = maxOrbitals[n][l];
-            int availableSpace = maxElectrons - orbitals[n][l];
-            int toAdd = Math.min(electronGain, availableSpace);
-
-            orbitals[n][l] += toAdd;
-            electronGain -= toAdd;
-
-            System.out.println("Added " + toAdd + " electrons to orbital " + (n + 1) + ORBITAL_LABELS[l]);
-
-            if (electronGain == 0) {
-                break; // All electrons added
-            }
-        }
-
-        if (electronGain > 0) {
-            System.out.println("Warning: Not enough orbitals to accommodate all " + electronGain + " additional electrons.");
-        }
-    }
-
     // Helper method to calculate the total number of electrons in the atom
     private int getTotalElectrons() {
         int total = 0;
@@ -243,7 +199,17 @@ public class Atom {
     public void alphaDecay(){
         atomicNumber -= 2;
         neutronNumber -= 2;
+        setup(orbitals);
+        aufbau(atomicNumber);
     }
 
-    
+    public String toString(){
+        return "Atom:\n" +
+                "ProtonNumber: "+
+                atomicNumber +"\n"+
+                "NeutronNumber: "
+                +neutronNumber +"\n"+
+                "Orbitals: \n"
+                + deepToString(orbitals);
+    }
 }
