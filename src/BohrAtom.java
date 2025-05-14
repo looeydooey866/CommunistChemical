@@ -133,11 +133,8 @@
             }
         }
 
-        public static void addToJSON(String fileName, BohrAtom atom){
-            String json = "{";
-            
-            json += "}";
-
+        public static void addToJSON(String fileName, Atom atom){
+            Atom.addToJSON(fileName, atom);
         }
 
         public static String deepToString(int[][] orbitals) {
@@ -357,7 +354,7 @@
         public void betaDecay(boolean isPositive){
             if(isPositive){
                 atomicNumber--;
-                neutronNumber--;
+                neutronNumber++;
             } else {
                 atomicNumber++;
                 neutronNumber--;

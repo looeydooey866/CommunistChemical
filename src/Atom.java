@@ -1,5 +1,8 @@
 package src;
 
+import jdk.jfr.Enabled;
+import jdk.jfr.Experimental;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -10,6 +13,14 @@ public interface Atom {
             result.append(Arrays.toString(orbital)).append("\n");
         }
         return result.toString();
+    }
+
+
+
+    static void addToJSON(String fileName, Atom atom){
+        String json = "{";
+
+        json += "}";
     }
 
     void setup(int[][] orbitals);

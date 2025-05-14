@@ -73,11 +73,12 @@ public class AtomTest {
 
     public static void testSymbols(){
         BohrAtom hydrogen = new BohrAtom("H", false);
-        assertEqual(1, hydrogen.getAtomicNumber(), "Symbols test failed");
+        assertEqual(1, hydrogen.getAtomicNumber(), "Symbols and names test failed");
+        assertTrue(hydrogen.getName().equals("Hydrogen"), "Symbols and names test failed");
 
         BohrAtom oxygen = new BohrAtom("Oxygen", true);
-        assertEqual(8, oxygen.getAtomicNumber(), "Symbols test failed");
-
+        assertEqual(8, oxygen.getAtomicNumber(), "Symbols and names test failed");
+        assertTrue(oxygen.getSymbol().equals("O"), "Symbols and names test failed");
     }
 
     public static void assertEqual(int expected, int actual, String message) {
