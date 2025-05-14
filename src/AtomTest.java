@@ -15,18 +15,18 @@ public class AtomTest {
         BohrAtom hydrogen = new BohrAtom(1);
         assertEqual(1, hydrogen.getAtomicNumber(), "Constructor atomic number test failed");
         assertEqual(1, hydrogen.getNeutronNumber(), "Constructor neutron number test failed");
-        assertEqual(1, BohrAtom.getNumberOfElectrons(hydrogen.getShells()), "Constructor electron number test failed");
+        assertEqual(1, BohrAtom.getNumberOfElectrons(hydrogen.getOrbitals()), "Constructor electron number test failed");
     }
 
     public static void testElectronConfiguration() {
         BohrAtom oxygen = new BohrAtom(8);
-        assertEqual(8, BohrAtom.getNumberOfElectrons(oxygen.getShells()), "Electron configuration test failed");
+        assertEqual(8, BohrAtom.getNumberOfElectrons(oxygen.getOrbitals()), "Electron configuration test failed");
     }
 
     public static void testIonisation() {
         BohrAtom sodium = new BohrAtom(11);
         sodium.ionise(1);
-        assertEqual(10, BohrAtom.getNumberOfElectrons(sodium.getShells()), "Ionisation test failed");
+        assertEqual(10, BohrAtom.getNumberOfElectrons(sodium.getOrbitals()), "Ionisation test failed");
     }
 
     public static void testBonding() {
@@ -37,8 +37,8 @@ public class AtomTest {
         } catch (Exception e) {
             throw new RuntimeException("Unexpected exception: " + e.getMessage());
         }
-        assertEqual(2, BohrAtom.getNumberOfElectrons(hydrogen1.getShells()), "Bonding test failed");
-        assertEqual(2, BohrAtom.getNumberOfElectrons(hydrogen2.getShells()), "Bonding test failed");
+        assertEqual(2, BohrAtom.getNumberOfElectrons(hydrogen1.getOrbitals()), "Bonding test failed");
+        assertEqual(2, BohrAtom.getNumberOfElectrons(hydrogen2.getOrbitals()), "Bonding test failed");
         assertTrue(hydrogen1.getBondedTo().contains(hydrogen2), "Bonding test failed");
         assertTrue(hydrogen2.getBondedTo().contains(hydrogen1), "Bonding test failed");
         System.out.println(hydrogen1);
@@ -51,8 +51,8 @@ public class AtomTest {
         } catch (Exception e) {
             throw new RuntimeException("Unexpected exception: " + e.getMessage());
         }
-        assertEqual(10, BohrAtom.getNumberOfElectrons(oxygen1.getShells()), "Bonding test failed");
-        assertEqual(10, BohrAtom.getNumberOfElectrons(oxygen2.getShells()), "Bonding test failed");
+        assertEqual(10, BohrAtom.getNumberOfElectrons(oxygen1.getOrbitals()), "Bonding test failed");
+        assertEqual(10, BohrAtom.getNumberOfElectrons(oxygen2.getOrbitals()), "Bonding test failed");
         System.out.println(oxygen1);
         System.out.println(oxygen2);
     }

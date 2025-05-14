@@ -23,7 +23,7 @@ public interface Atom {
     void addElectronsTo(int[] shell, int[] maxCapacity, int electronsToAdd);
     int getMaxCapacityValence();
 
-    int[][] getShells();
+    int[][] getOrbitals();
 
     int getNeutronNumber();
     int getAtomicNumber();

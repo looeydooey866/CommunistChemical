@@ -8,7 +8,7 @@
         private int atomicNumber;
 
 
-        public int[][] shells = {
+        public int[][] orbitals = {
                 {0},
                 {0, 0},
                 {0, 0, 0},
@@ -21,12 +21,18 @@
         private String symbol;
         private String name;
 
-        private static final char[] ORBITAL_LABELS = {'s', 'p', 'd', 'f'};
+        private static final OrbitalLabel[] labels = {
+                OrbitalLabel.S,
+                OrbitalLabel.P,
+                OrbitalLabel.D,
+                OrbitalLabel.F
+        };
+
         private static final int S = 2;
         private static final int P = 6;
         private static final int D = 10;
         private static final int F = 14;
-        private static final int[][] maxShells = {
+        private static final int[][] maxOrbitals = {
                 {S},
                 {S, P},
                 {S, P, D},
@@ -155,7 +161,8 @@
         }
 
         public void setup(int[][] orbitals) {
-            orbitals = new int[][]{{0},
+            orbitals = new int[][]{
+                    {0},
                     {0, 0},
                     {0, 0, 0},
                     {0, 0, 0, 0},
@@ -164,22 +171,22 @@
                     {0, 0}
             };
         }
-        public void aufbau(int electronNumber) {
+        public void aufbau(int electronNumber) throws AtomConstructionException {
 
             for (int[] orbital : shellOrder) {
                 int n = orbital[0] - 1; // Convert to zero-based index
                 int l = orbital[1] - 1;
 
                 // Safety check: Ensure n and l are within bounds
-                if (n < 0 || n >= shells.length || l < 0 || l >= shells[n].length) {
-                    System.err.println("Index out of bounds: n=" + n + ", l=" + l);
-                    continue; // Skip this iteration instead of crashing
+                if (n < 0 || n >= orbitals.length || l < 0 || l >= orbitals[n].length) {
+                    setup(this.orbitals);
+                    throw new AtomConstructionException("Principal Quantum Number and Angular Momentum Number out of bounds");
                 }
 
-                int maxElectrons = maxShells[n][l];
+                int maxElectrons = maxOrbitals[n][l];
                 int toFill = Math.min(electronNumber, maxElectrons);
 
-                shells[n][l] += toFill;
+                orbitals[n][l] += toFill;
                 electronNumber -= toFill;
 
                 if (electronNumber == 0) break;
@@ -191,44 +198,44 @@
         private void applyExceptions() {
             // Chromium (24) and Molybdenum (42)
             if (atomicNumber == 24 || atomicNumber == 42) {
-                shells[3][0] = 1; // 4s1
-                shells[2][2] = 5; // 3d5 (or 4d5 for Mo)
+                orbitals[3][0] = 1; // 4s1
+                orbitals[2][2] = 5; // 3d5 (or 4d5 for Mo)
             }
 
             // Copper (29), Silver (47), Gold (79)
             if (atomicNumber == 29 || atomicNumber == 47 || atomicNumber == 79) {
-                shells[3][0] = 1; // 4s1 (or equivalent)
-                shells[2][2] = 10; // 3d10
+                orbitals[3][0] = 1; // 4s1 (or equivalent)
+                orbitals[2][2] = 10; // 3d10
             }
 
             // Niobium (41), Ruthenium (44), Rhodium (45)
             if (atomicNumber == 41) { // Niobium
-                shells[4][0] = 1; // 5s1
-                shells[3][2] = 4; // 4d4
+                orbitals[4][0] = 1; // 5s1
+                orbitals[3][2] = 4; // 4d4
             }
             if (atomicNumber == 44) { // Ruthenium
-                shells[4][0] = 1; // 5s1
-                shells[3][2] = 7; // 4d7
+                orbitals[4][0] = 1; // 5s1
+                orbitals[3][2] = 7; // 4d7
             }
             if (atomicNumber == 45) { // Rhodium
-                shells[4][0] = 1; // 5s1
-                shells[3][2] = 8; // 4d8
+                orbitals[4][0] = 1; // 5s1
+                orbitals[3][2] = 8; // 4d8
             }
             // Palladium (46)
             if (atomicNumber == 46) {
-                shells[4][0] = 0; // 5s0
-                shells[3][2] = 10; // 4d10
+                orbitals[4][0] = 0; // 5s0
+                orbitals[3][2] = 10; // 4d10
             }
             // Platinum (78)
             if (atomicNumber == 78) {
-                shells[5][0] = 1; // 6s1
-                shells[4][2] = 10; // 5d10
+                orbitals[5][0] = 1; // 6s1
+                orbitals[4][2] = 10; // 5d10
             }
             // Lawrencium (103)
             if (atomicNumber == 103) {
-                shells[6][0] = 1; // 7s1
-                shells[4][3] = 14; // 5f14
-                shells[5][2] = 2; // 6d2
+                orbitals[6][0] = 1; // 7s1
+                orbitals[4][3] = 14; // 5f14
+                orbitals[5][2] = 2; // 6d2
             }
         }
 
@@ -236,22 +243,22 @@
             int electronsToLose = electronLoss;
             int electronsToGain = -electronLoss;
             if (electronLoss > 0) {
-                for (int i = shells.length - 1; i >= 0; i--) {
-                    for (int j = shells[i].length - 1; j >= 0; j--) {
-                        if (shells[i][j] > 0) {
-                            int toRemove = Math.min(shells[i][j], electronsToLose);
+                for (int i = orbitals.length - 1; i >= 0; i--) {
+                    for (int j = orbitals[i].length - 1; j >= 0; j--) {
+                        if (orbitals[i][j] > 0) {
+                            int toRemove = Math.min(orbitals[i][j], electronsToLose);
                             electronsToLose -= toRemove;
-                            shells[i][j] -= toRemove;
+                            orbitals[i][j] -= toRemove;
                         }
                     }
                 }
             } else if (electronsToGain > 0) {
-                for (int i = 0; i < shells.length; i++) {
-                    for (int j = 0; j < shells[i].length ; j++) {
-                        if (shells[i][j] < maxShells[i][j]) {
-                            int needed = Math.min(maxShells[i][j] - shells[i][j], electronsToGain);
+                for (int i = 0; i < orbitals.length; i++) {
+                    for (int j = 0; j < orbitals[i].length ; j++) {
+                        if (orbitals[i][j] < maxOrbitals[i][j]) {
+                            int needed = Math.min(maxOrbitals[i][j] - orbitals[i][j], electronsToGain);
                             electronsToGain -= needed;
-                            shells[i][j] += needed;
+                            orbitals[i][j] += needed;
                         }
                     }
                 }
@@ -288,18 +295,18 @@
         }
 
         public int[] getValenceShell(){
-            for(int i = shells.length - 1; i >= 0; i--){
-                if(shells[i][0] != 0){
-                    return shells[i];
+            for(int i = orbitals.length - 1; i >= 0; i--){
+                if(orbitals[i][0] != 0){
+                    return orbitals[i];
                 }
             }
             throw new CovalentBondException("All shells are empty");
         }
 
         public int[] getMaxValenceShell(){
-            for(int i = shells.length - 1; i >= 0; i--){
-                if(shells[i][0] != 0){
-                    return maxShells[i];
+            for(int i = orbitals.length - 1; i >= 0; i--){
+                if(orbitals[i][0] != 0){
+                    return maxOrbitals[i];
                 }
             }
             throw new CovalentBondException("All shells are empty");
@@ -328,8 +335,8 @@
             };
         }
 
-        public int[][] getShells() {
-            return shells;
+        public int[][] getOrbitals() {
+            return orbitals;
         }
 
         public int getNeutronNumber() {return neutronNumber;}
@@ -342,7 +349,7 @@
         public BohrAtom alphaDecay(){
             atomicNumber -= 2;
             neutronNumber -= 2;
-            setup(shells);
+            setup(orbitals);
             aufbau(atomicNumber);
             return new BohrAtom(2,2);
         }
@@ -355,7 +362,7 @@
                 atomicNumber++;
                 neutronNumber--;
             }
-            setup(shells);
+            setup(orbitals);
             aufbau(atomicNumber);
         }
 
@@ -366,7 +373,7 @@
                     "NeutronNumber: "
                     +neutronNumber +"\n"+
                     "Orbitals: \n"
-                    + deepToString(shells);
+                    + deepToString(orbitals);
         }
 
 
