@@ -96,7 +96,7 @@
             this.neutronNumber = neutronNumber;
             this.name = elementNames[atomicNumber];
             this.symbol = elementSymbols[atomicNumber];
-            aufbau(electronNumber);
+            fill(electronNumber);
         }
 
         public BohrAtom(int atomicNumber, int neutronNumber) {
@@ -115,7 +115,7 @@
                         neutronNumber = i+1;
                         name = elementNames[i];
                         symbol = elementSymbols[i];
-                        aufbau(atomicNumber);
+                        fill(atomicNumber);
                         break;
                     }
                 }
@@ -126,7 +126,7 @@
                         neutronNumber = i+1;
                         name = elementNames[i];
                         symbol = elementSymbols[i];
-                        aufbau(atomicNumber);
+                        fill(atomicNumber);
                         break;
                     }
                 }
@@ -168,7 +168,7 @@
                     {0, 0}
             };
         }
-        public void aufbau(int electronNumber) throws AtomConstructionException {
+        public void fill(int electronNumber) throws AtomConstructionException {
 
             for (int[] orbital : shellOrder) {
                 int n = orbital[0] - 1; // Convert to zero-based index
@@ -347,7 +347,7 @@
             atomicNumber -= 2;
             neutronNumber -= 2;
             setup(orbitals);
-            aufbau(atomicNumber);
+            fill(atomicNumber);
             return new BohrAtom(2,2);
         }
 
@@ -360,7 +360,7 @@
                 neutronNumber--;
             }
             setup(orbitals);
-            aufbau(atomicNumber);
+            fill(atomicNumber);
         }
 
         public String toString(){

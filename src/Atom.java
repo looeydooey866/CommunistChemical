@@ -23,7 +23,7 @@ public interface Atom {
     }
 
     void setup(int[][] orbitals);
-    void aufbau(int electronNumber);
+    void fill(int electronNumber);
     void ionise(int electronLoss);
 
     void bond(Atom other, int bondOrder, boolean needToRecur) throws CovalentBondException;
@@ -32,8 +32,6 @@ public interface Atom {
     int[] getMaxValenceShell();
     void addElectronsTo(int[] shell, int[] maxCapacity, int electronsToAdd);
     int getMaxCapacityValence();
-
-    int[][] getOrbitals();
 
     int getNeutronNumber();
     int getAtomicNumber();
