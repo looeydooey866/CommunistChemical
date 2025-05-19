@@ -36,54 +36,69 @@ public class ElectronDomain {
         else if (electrons.size() == 2) this.domainType = DomainType.LONE_PAIR;
     }
 
-    public ElectronDomain(Shell shell, Electron electron, DomainType domainType) {
+    public ElectronDomain(Shell shell, Electron electron) {
         setup(shell);
         this.electrons = new ArrayList<>();
         electrons.add(electron);
+        this.domainType = DomainType.LONE_ELECTRON;
     }
+
+    DomainType setDomainType(int c){
+        DomainType dtype;
+        if(c == 1){
+            dtype = DomainType.LONE_ELECTRON;
+        } else if (c==2){
+            dtype = DomainType.LONE_PAIR;
+        } else dtype = DomainType.UNKNOWN;
+        return dtype;
+    }
+
+    ElectronDomain[] createDomainAndAddElectrons(int c){
+        ElectronDomain[] domains = new ElectronDomain[c];
+        for (int i = 0; i < associatedShells.size(); i++) {
+            if(i==0){continue;}
+            Shell otherShell = associatedShells.get(i);
+            ArrayList<Electron> domainElectrons = new ArrayList<>();
+            int min = i*c;
+            int max = i*(c+1);
+
+            for (int j = min; j < max; j++){
+                domainElectrons.add(this.electrons.removeFirst());
+            }
+            DomainType dtype = setDomainType(c);
+            domains[i] = new ElectronDomain(otherShell, domainElectrons, dtype);
+        }
+        return domains;
+    }
+
+    ElectronDomain[] handlePiCase(){
+        int c = associatedShells.size() / electrons.size();
+        if(associatedShells.size() % electrons.size() == 0){
+            return createDomainAndAddElectrons(c);
+        } else throw new DomainException("Each shell is not contributing the same number of electrons.");
+    }
+
 
     public ElectronDomain[] split() {
         switch (this.domainType) {
             case LONE_PAIR -> {
-                ElectronDomain newDomain = new ElectronDomain(this.associatedShells.getFirst(), this.electrons.get(1), DomainType.LONE_ELECTRON);
+                ElectronDomain newDomain = new ElectronDomain(this.associatedShells.getFirst(), this.electrons.get(1));
                 this.electrons.remove(1);
                 this.domainType = DomainType.LONE_ELECTRON;
                 return new ElectronDomain[]{newDomain};
             }
+
             case LONE_ELECTRON -> throw new DomainException("Cannot split a lone electron");
 
             case SIGMA_BOND_PAIR ->{
-                ElectronDomain newDomain = new ElectronDomain(this.associatedShells.get(1), this.electrons.get(1), DomainType.LONE_ELECTRON);
+                ElectronDomain newDomain = new ElectronDomain(this.associatedShells.get(1), this.electrons.get(1));
                 this.electrons.remove(1);
                 this.associatedShells.remove(1);
                 return new ElectronDomain[]{newDomain};
             }
-            case PI_BOND_GROUP -> {
-                int c = associatedShells.size() / electrons.size();
-                if(associatedShells.size() % electrons.size() == 0){
-                    ElectronDomain[] domains = new ElectronDomain[associatedShells.size()/electrons.size()];
-                    for (int i = 0; i < associatedShells.size(); i++) {
-                        if(i==0){
-                            continue;
-                        }
-                        Shell sh = associatedShells.get(i);
-                        ArrayList<Electron> es = new ArrayList<>();
-                        int min = i*electrons.size();
-                        int max = i*(electrons.size()+1);
-                        DomainType dtype;
-                        if(c == 1){
-                            dtype = DomainType.LONE_ELECTRON;
-                        } else if (c==2){
-                            dtype = DomainType.LONE_PAIR;
-                        } else dtype = DomainType.UNKNOWN;
-                        for(int j = min;j<max;j++){
-                            es.add(electrons.get(j));
-                        }
-                        domains[i] = new ElectronDomain(sh, es,dtype);
-                    }
-                    return domains;
-                } else throw new DomainException("Each shell is not contributing the same number of electrons.");
-            }
+
+            case PI_BOND_GROUP ->{return handlePiCase();}
+
             default -> throw new DomainException("Something went wrong while splitting the domain.");
         }
     }
