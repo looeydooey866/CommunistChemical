@@ -57,7 +57,7 @@
                 "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Og"
         };
 
-        public static String[] elementNames = {
+        public static final String[] elementNames = {
                 "Hydrogen", "Helium", "Lithium", "Beryllium", "Boron", "Carbon", "Nitrogen", "Oxygen", "Fluorine", "Neon",
                 "Sodium", "Magnesium", "Aluminium", "Silicon", "Phosphorus", "Sulfur", "Chlorine", "Argon", "Potassium", "Calcium",
                 "Scandium", "Titanium", "Vanadium", "Chromium", "Manganese", "Iron", "Cobalt", "Nickel", "Copper", "Zinc",

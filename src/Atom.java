@@ -14,8 +14,6 @@ public interface Atom {
         return result.toString();
     }
 
-
-
     static void addToJSON(String fileName, Atom atom){
         String json = "{";
 
