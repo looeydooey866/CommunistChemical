@@ -1,4 +1,4 @@
-package src;
+package src.Legacy;
 
 public class AtomTest {
     public static void main(String[] args) {

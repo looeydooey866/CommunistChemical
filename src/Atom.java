@@ -2,6 +2,8 @@ package src;
 
 
 
+import src.Exceptions.CovalentBondException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -13,8 +15,6 @@ public interface Atom {
         }
         return result.toString();
     }
-
-
 
     static void addToJSON(String fileName, Atom atom){
         String json = "{";
