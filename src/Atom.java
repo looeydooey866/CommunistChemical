@@ -2,6 +2,8 @@ package src;
 
 
 
+import src.Exceptions.CovalentBondException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 

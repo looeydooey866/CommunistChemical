@@ -1,5 +1,8 @@
 package src;
 
+import src.Exceptions.DomainException;
+import src.Exceptions.ElectronDomainConstructionException;
+
 import java.util.ArrayList;
 
 public class ElectronDomain {
@@ -12,8 +15,6 @@ public class ElectronDomain {
         this.associatedShells = new ArrayList<>();
         associatedShells.add(shell);
     }
-
-
 
     public ElectronDomain(Shell shell, int numElectrons) {
         setup(shell);
@@ -59,11 +60,11 @@ public class ElectronDomain {
                 return new ElectronDomain[]{newDomain};
             }
             case PI_BOND_GROUP -> {
-                int c = associatedShells.size() / electrons.size();
+                int electronsPerShell = associatedShells.size() / electrons.size();
                 if(associatedShells.size() % electrons.size() == 0){
                     ElectronDomain[] domains = new ElectronDomain[associatedShells.size()/electrons.size()];
                     for (int i = 0; i < associatedShells.size(); i++) {
-                        if(i==0){
+                        if(i == 0){
                             continue;
                         }
                         Shell sh = associatedShells.get(i);
@@ -71,9 +72,9 @@ public class ElectronDomain {
                         int min = i*electrons.size();
                         int max = i*(electrons.size()+1);
                         DomainType dtype;
-                        if(c == 1){
+                        if (electronsPerShell == 1){
                             dtype = DomainType.LONE_ELECTRON;
-                        } else if (c==2){
+                        } else if (electronsPerShell == 2){
                             dtype = DomainType.LONE_PAIR;
                         } else dtype = DomainType.UNKNOWN;
                         for(int j = min;j<max;j++){

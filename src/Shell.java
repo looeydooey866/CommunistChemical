@@ -22,6 +22,13 @@ public class Shell {
 
     //helper method for creating the electron domains
     private void setupDomains(int numElectrons){
+        for (int e=0;e<numElectrons/2;e++){
+            domains.add(new ElectronDomain(this, 2));
+        }
+        if (numElectrons % 2 == 1)
+            domains.add(new ElectronDomain(this, 1));
+    }
 
+    public String getMolecularGeometry(){
     }
 }

@@ -1,12 +1,15 @@
-    package src;
+    package src.Legacy;
+
+    import src.Atom;
+    import src.Exceptions.AtomConstructionException;
+    import src.Exceptions.CovalentBondException;
+    import src.OrbitalLabel;
 
     import java.util.ArrayList;
 
     public class BohrAtom implements Atom {
-
         private int neutronNumber;
         private int atomicNumber;
-
 
         public int[][] orbitals = {
                 {0},
@@ -17,6 +20,7 @@
                 {0, 0, 0},
                 {0, 0}
         };
+
         private ArrayList<Atom> bondedTo = new ArrayList<>();
         private String symbol;
         private String name;
@@ -260,10 +264,7 @@
                     }
                 }
             }
-
         }
-
-
 
         public void bond(Atom other, int bondOrder, boolean needToRecur) throws CovalentBondException {
             int[] thisValenceShell = this.getValenceShell();
@@ -273,19 +274,19 @@
             int otherMaxCapacity = other.getMaxCapacityValence();
 
 
-            if(bondOrder > 3){throw new CovalentBondException("Bond order cannot be more than 3");}
-            if(bondOrder < 1) {throw new CovalentBondException("Bond order must be positive");}
+            if (bondOrder > 3){throw new CovalentBondException("Bond order cannot be more than 3");}
+            if (bondOrder < 1) {throw new CovalentBondException("Bond order must be positive");}
 
             int electronsInThis = getNumberOfElectrons(thisValenceShell);
             int electronsInOther = getNumberOfElectrons(otherValenceShell);
 
-            if(electronsInThis < bondOrder){throw new CovalentBondException("Not enough Electrons to bond");}
-            if(electronsInOther < bondOrder){throw new CovalentBondException("Not enough Electrons to bond");}
+            if (electronsInThis < bondOrder){throw new CovalentBondException("Not enough Electrons to bond");}
+            if (electronsInOther < bondOrder){throw new CovalentBondException("Not enough Electrons to bond");}
 
-            if(bondOrder+electronsInThis > thisMaxCapacity){throw new CovalentBondException("Not enough space to bond");}
-            if(bondOrder + electronsInOther > otherMaxCapacity){throw new CovalentBondException("Not enough space to bond");}
+            if (bondOrder + electronsInThis > thisMaxCapacity){throw new CovalentBondException("Not enough space to bond");}
+            if (bondOrder + electronsInOther > otherMaxCapacity){throw new CovalentBondException("Not enough space to bond");}
 
-            if(needToRecur)other.bond(this, bondOrder, false);
+            if (needToRecur)other.bond(this, bondOrder, false);
 
             this.bondedTo.add(other);
             this.addElectronsTo(thisValenceShell, maxThisValenceShell, bondOrder);
